@@ -1,0 +1,10 @@
+{
+  "title": "Machine King Labs",
+  "projects": [
+    { "name": "Directors Palette", "path": "D:/git/directors-palette-v2", "tagline": "AI storyboard & image generation", "accent": "info" },
+    { "name": "TalkAdvantage Pro", "path": "D:/git/talkadvantage/TalkAdvantagePro", "tagline": "Live conversation assistant", "accent": "success" },
+    { "name": "Ad Lab", "path": "D:/git/mkm/ad-lab", "tagline": "Marketing production system", "accent": "warning" },
+    { "name": "HeyYou'reHired", "path": "D:/git/yourehired", "tagline": "Job-seeker toolkit", "accent": "info" },
+    { "name": "LogNog", "path": "D:/git/lognog", "tagline": "Self-hosted log management", "accent": "success" }
+  ]
+}

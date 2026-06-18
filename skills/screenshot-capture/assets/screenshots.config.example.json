@@ -1,0 +1,22 @@
+{
+  "$comment": "Copy to docs/screenshots.config.json and edit. Keep secrets OUT — use \"env\" for passwords. See references/capture-recipes.md for the full schema.",
+  "baseUrl": "http://localhost:3000",
+  "outDir": "docs/user-guide/screenshots",
+  "viewport": { "width": 1440, "height": 900 },
+  "guide": "docs/user-guide.md",
+  "vars": { "projectId": "REPLACE-with-a-demo-project-id" },
+  "auth": {
+    "loginUrl": "/login",
+    "steps": [
+      { "fill": "#email", "value": "demo@example.test" },
+      { "fill": "#password", "env": "SHOT_PASS" },
+      { "click": "button[type=submit]" },
+      { "waitFor": "/dashboard" }
+    ]
+  },
+  "shots": [
+    { "id": "dashboard", "label": "Dashboard", "url": "/dashboard", "waitFor": "main" },
+    { "id": "feature-x", "label": "Feature X", "url": "/feature-x", "fullPage": true, "highlight": ".primary-action" },
+    { "id": "settings", "label": "Settings", "url": "/settings", "mask": [".user-email", ".billing-amount"] }
+  ]
+}

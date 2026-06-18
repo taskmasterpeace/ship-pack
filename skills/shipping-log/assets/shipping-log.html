@@ -1,0 +1,96 @@
+<!--
+  Shipping Log — drop-in landing-page section (dark, on-brand, OKLCH).
+  Portable HTML/CSS: paste into any landing page, or port to a React/Next component
+  (keep the class names; feed `.ship-entry` blocks from a typed array or CHANGELOG source).
+
+  Customize: set --hue (290 = purple). Replace the 3 metric numbers, the entries, and the
+  .ship-art illustration in each entry. Each entry uses one accent family — vary --accent
+  per entry if you want subtle per-release color.
+
+  Illustration slot: .ship-art holds an inline <svg>, an <img src>, or a generated graphic.
+  Keep it flat and ~16:6. A few sample SVGs are included below — swap freely.
+-->
+<section class="ship-log" aria-label="Product shipping log">
+  <style>
+    .ship-log{--hue:290;--bg:oklch(0.18 0.02 var(--hue));--card:oklch(0.22 0.025 var(--hue));--card-2:oklch(0.25 0.03 var(--hue));--text:oklch(0.97 0.01 var(--hue));--muted:oklch(0.7 0.04 var(--hue));--border:oklch(0.32 0.03 var(--hue));--accent:oklch(0.62 0.2 var(--hue));--accent-soft:oklch(0.3 0.08 var(--hue));font-family:Inter,system-ui,sans-serif;color:var(--text);background:var(--bg);max-width:64rem;margin:0 auto;padding:2.5rem 1.5rem;border-radius:0.625rem;letter-spacing:-0.01em}
+    .ship-head{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.5rem}
+    .ship-eyebrow{display:inline-flex;align-items:center;gap:0.4rem;font-size:0.8rem;font-weight:600;color:var(--accent)}
+    .ship-h{font-size:1.875rem;font-weight:700;letter-spacing:-0.025em;margin:0.2rem 0 0}
+    .ship-sub{color:var(--muted);font-size:0.9rem;margin:0}
+    .ship-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(7rem,1fr));gap:0.75rem;margin-bottom:2rem}
+    .ship-stat{background:var(--card);border:1px solid var(--border);border-radius:0.625rem;padding:1rem}
+    .ship-stat .n{font-size:1.6rem;font-weight:700}
+    .ship-stat .l{color:var(--muted);font-size:0.8rem}
+    .ship-entry{background:var(--card);border:1px solid var(--border);border-radius:0.625rem;overflow:hidden;margin-bottom:1rem;transition:box-shadow .2s,transform .2s}
+    .ship-entry:hover{box-shadow:0 8px 30px oklch(0 0 0 / 0.25);transform:translateY(-2px)}
+    .ship-art{background:var(--card-2);padding:1.1rem 1.25rem;border-bottom:1px solid var(--border)}
+    .ship-art svg{display:block;width:100%;height:auto;max-height:150px}
+    .ship-body{padding:1.1rem 1.4rem}
+    .ship-row{display:flex;align-items:center;gap:0.75rem;margin-bottom:0.6rem}
+    .ship-date{flex:none;text-align:center;background:var(--accent-soft);color:var(--accent);border-radius:0.625rem;padding:0.3rem 0.55rem;line-height:1.05}
+    .ship-date .m{font-size:0.62rem;font-weight:600;letter-spacing:0.05em;text-transform:uppercase}
+    .ship-date .d{font-size:1.1rem;font-weight:700}
+    .ship-title{font-size:1.15rem;font-weight:600;margin:0}
+    .ship-theme{color:var(--muted);font-size:0.82rem;margin:0.1rem 0 0}
+    .ship-list{margin:0.6rem 0 0.9rem;padding-left:1.1rem;color:var(--muted);font-size:0.92rem;line-height:1.65}
+    .ship-list li{margin-bottom:0.2rem}
+    .ship-list strong{color:var(--text);font-weight:600}
+    .ship-tags{display:flex;flex-wrap:wrap;gap:0.4rem}
+    .ship-tag{font-size:0.75rem;font-weight:500;padding:0.2rem 0.6rem;border-radius:0.625rem;border:1px solid var(--border);color:var(--muted)}
+    .ship-tag.new{color:oklch(0.8 0.15 var(--hue));border-color:var(--accent-soft)}
+    .ship-tag.sec{color:oklch(0.82 0.16 150);border-color:oklch(0.4 0.1 150)}
+    .ship-tag.fix{color:oklch(0.84 0.15 70);border-color:oklch(0.42 0.12 70)}
+  </style>
+
+  <div class="ship-head">
+    <div>
+      <span class="ship-eyebrow">⚡ Built in public</span>
+      <h2 class="ship-h">Shipping log</h2>
+      <p class="ship-sub">We ship constantly. Here's the latest.</p>
+    </div>
+    <a href="#" style="color:var(--accent);font-size:0.85rem;text-decoration:none">View all releases →</a>
+  </div>
+
+  <!-- STATS: replace numbers with collect-history.mjs output -->
+  <div class="ship-stats">
+    <div class="ship-stat"><div class="n">27</div><div class="l">Updates this week</div></div>
+    <div class="ship-stat"><div class="n">3</div><div class="l">Releases · 5 days</div></div>
+    <div class="ship-stat"><div class="n">Today</div><div class="l">Last shipped</div></div>
+  </div>
+
+  <!-- ENTRY TEMPLATE — duplicate per release, newest first -->
+  <article class="ship-entry">
+    <div class="ship-art">
+      <!-- Illustration slot: inline SVG / <img> / generated graphic. Example: -->
+      <svg viewBox="0 0 600 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="40" y="44" width="92" height="24" rx="6" fill="none" stroke="var(--accent)" stroke-width="1.5" opacity="0.7"/>
+        <line x1="140" y1="70" x2="430" y2="70" stroke="var(--accent)" stroke-width="1.5" stroke-dasharray="5 5" opacity="0.6"/>
+        <circle cx="285" cy="70" r="16" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.5"/>
+        <rect x="438" y="40" width="122" height="60" rx="14" fill="var(--accent)" opacity="0.9"/>
+        <circle cx="468" cy="70" r="10" fill="var(--bg)"/>
+        <rect x="488" y="62" width="56" height="6" rx="3" fill="var(--bg)" opacity="0.9"/>
+        <rect x="488" y="74" width="38" height="6" rx="3" fill="var(--bg)" opacity="0.6"/>
+      </svg>
+    </div>
+    <div class="ship-body">
+      <div class="ship-row">
+        <div class="ship-date"><div class="m">Jun</div><div class="d">13</div></div>
+        <div>
+          <h3 class="ship-title">Headline — what the user can now do</h3>
+          <p class="ship-theme">Optional one-line theme · or "Rolling out"</p>
+        </div>
+      </div>
+      <ul class="ship-list">
+        <li><strong>Lead with the benefit</strong>, then the mechanism if useful.</li>
+        <li>Keep it to 2–4 bullets. Merge small commits.</li>
+      </ul>
+      <div class="ship-tags">
+        <span class="ship-tag new">New</span>
+        <span class="ship-tag sec">Security</span>
+        <span class="ship-tag fix">Fixed</span>
+      </div>
+    </div>
+  </article>
+  <!-- /ENTRY TEMPLATE -->
+
+</section>

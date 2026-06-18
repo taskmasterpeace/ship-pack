@@ -1,0 +1,140 @@
+#!/usr/bin/env node
+// render-tour.mjs — turn docs/onboarding.json into an embeddable, themeable coachmark tour.
+//
+// Emits two artifacts, both self-contained, both themed from docs/brand.json (one brand file,
+// every output on-brand — never purple by default; no backdrop-filter / no SVG turbulence):
+//
+//   1. <out-dir>/onboarding-tour.js   A dependency-free, framework-agnostic Web Component
+//      <onboarding-tour>. Drop the <script>, add the element, pass it the JSON. It positions
+//      a spotlight + coachmark next to each step's CSS selector, drives Next/Back/Skip, and
+//      remembers completion in localStorage so it fires once. No build step, no React needed.
+//
+//   2. <out-dir>/onboarding-preview.html   A standalone page that mounts the component over a
+//      mock app so you (or a designer) can click through the real tour copy before wiring it
+//      into the product. Open it in a browser — no server required.
+//
+// The CSS variables come from brand.json :root tokens, so the component inherits page theme
+// when embedded; the preview supplies them itself.
+//
+// Usage:
+//   node render-tour.mjs --in docs/onboarding.json --out-dir docs/onboarding [--brand docs/brand.json]
+//
+// Part of the ship-onboarding skill / the ship docs+release pack.
+
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const here = dirname(fileURLToPath(import.meta.url));
+
+const args = process.argv.slice(2);
+const opt = (n, d) => { const i = args.indexOf(n); return i !== -1 ? args[i + 1] : d; };
+
+const IN = opt("--in", "docs/onboarding.json");
+const OUT_DIR = opt("--out-dir", "docs/onboarding");
+const BRAND = opt("--brand", "docs/brand.json");
+
+if (!existsSync(IN)) { console.error(`render-tour: input not found: ${IN}`); process.exit(1); }
+let spec; try { spec = JSON.parse(readFileSync(IN, "utf8")); } catch (e) { console.error(`render-tour: ${IN} is not valid JSON: ${e.message}`); process.exit(1); }
+if (!Array.isArray(spec.steps) || spec.steps.length === 0) { console.error("render-tour: spec has no steps"); process.exit(1); }
+
+// ---------- theme tokens (brand-as-data; NEVER purple by default) ----------
+const DEFAULTS = {
+  bg: "#0b0d10", surface: "#13171e", border: "#232a33",
+  text: "#e7edf3", muted: "#90a0b0", heading: "#f5f9fd",
+  brand: "#2f7dff",          // trustworthy blue default — explicitly not purple/indigo
+  accent: "#ffc24b", "accent-ink": "#0b0d10",
+};
+const FONT_DEFAULTS = { display: "Bricolage Grotesque", body: "Hanken Grotesk", mono: "JetBrains Mono" };
+const fontStack = (n, kind) =>
+  `"${n}",${kind === "mono" ? 'ui-monospace,SFMono-Regular,monospace' : "ui-sans-serif,system-ui,sans-serif"}`;
+
+const brand = existsSync(BRAND) ? JSON.parse(readFileSync(BRAND, "utf8")) : null;
+function rootVars() {
+  const t = { ...DEFAULTS };
+  if (brand && brand.colors) for (const [k, v] of Object.entries(brand.colors)) if (t[k] !== undefined || k in DEFAULTS) t[k] = v;
+  // pull through the handful the tour uses even if brand only defines them
+  for (const k of ["bg", "surface", "border", "text", "muted", "heading", "brand", "accent", "accent-ink"])
+    if (brand && brand.colors && brand.colors[k]) t[k] = brand.colors[k];
+  const fonts = { ...FONT_DEFAULTS, ...((brand && brand.fonts) || {}) };
+  const lines = Object.entries(t).map(([k, v]) => `      --ob-${k}: ${v};`);
+  lines.push(`      --ob-font-display: ${fontStack(fonts.display, "display")};`);
+  lines.push(`      --ob-font-body: ${fontStack(fonts.body, "body")};`);
+  return lines.join("\n");
+}
+
+// ---------- the Web Component (read from a template; __OB_TICK__ -> backtick) ----------
+// The component lives in assets/onboarding-tour.template.js so this renderer never has to
+// nest template literals (which makes the .mjs un-parseable). We just substitute the marker.
+function loadComponent() {
+  const tplPath = join(here, "..", "assets", "onboarding-tour.template.js");
+  if (!existsSync(tplPath)) { console.error(`render-tour: template missing: ${tplPath}`); process.exit(1); }
+  return readFileSync(tplPath, "utf8").replaceAll("__OB_TICK__", "`");
+}
+const COMPONENT = loadComponent();
+
+// ---------- preview page (standalone, themed, mock app) ----------
+function previewHtml() {
+  const name = (brand && brand.name) || spec.name || "This app";
+  // Build a mock toolbar of buttons whose data-tour ids match step selectors when possible.
+  const chips = spec.steps
+    .filter((s) => s.selector && /data-tour=["']?([\w-]+)/.test(s.selector))
+    .map((s) => {
+      const id = s.selector.match(/data-tour=["']?([\w-]+)/)[1];
+      return `<button class="chip" data-tour="${id}">${esc(s.title)}</button>`;
+    })
+    .join("\n        ");
+  const stepsJson = JSON.stringify(spec).replace(/</g, "\\u003c");
+  return `<!DOCTYPE html>
+<!-- onboarding-preview.html — generated by ship-onboarding/render-tour.mjs. Standalone; no server. -->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${esc(name)} — onboarding preview</title>
+<style>
+  :root{
+${rootVars()}
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ob-bg);color:var(--ob-text);font-family:var(--ob-font-body);
+    background-image:linear-gradient(var(--ob-border) 1px,transparent 1px),linear-gradient(90deg,var(--ob-border) 1px,transparent 1px);
+    background-size:36px 36px;background-blend-mode:soft-light;}
+  .bar{display:flex;align-items:center;gap:10px;padding:14px 20px;border-bottom:1px solid var(--ob-border);background:var(--ob-surface)}
+  .bar b{font-family:var(--ob-font-display);color:var(--ob-heading);font-size:1.05rem}
+  .wrap{max-width:980px;margin:32px auto;padding:0 20px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;margin:20px 0}
+  .chip{font:600 .9rem var(--ob-font-body);background:var(--ob-surface);color:var(--ob-text);
+    border:1px solid var(--ob-border);border-radius:10px;padding:10px 14px;cursor:default}
+  .panel{border:1px solid var(--ob-border);border-radius:14px;background:var(--ob-surface);padding:24px;margin-top:18px}
+  .note{color:var(--ob-muted);font-size:.9rem;line-height:1.6}
+  .replay{margin-left:auto;background:var(--ob-brand);color:#fff;border:none;border-radius:9px;padding:9px 14px;font:600 .86rem var(--ob-font-body);cursor:pointer}
+</style></head>
+<body>
+  <div class="bar"><b>${esc(name)}</b><span class="note">onboarding preview</span>
+    <button class="replay" onclick="document.querySelector('onboarding-tour').restart()">Replay tour</button></div>
+  <div class="wrap">
+    <p class="note">This page mocks your app so you can click through the real first-run copy before wiring it in.
+      The buttons below carry <code>data-tour</code> hooks; the tour spotlights them. Replace this page with your app and keep the same hooks.</p>
+    <div class="toolbar">
+        ${chips || '<button class="chip" data-tour="welcome">No selector-bound steps yet</button>'}
+    </div>
+    <div class="panel"><p class="note">Mock workspace area. In your real app, the tour targets whatever element each step's <code>selector</code> points at.</p></div>
+  </div>
+  <onboarding-tour manual></onboarding-tour>
+  <script src="./onboarding-tour.js"></script>
+  <script>
+    const t=document.querySelector('onboarding-tour');
+    t.spec=${stepsJson};
+    t.start();
+  </script>
+</body></html>
+`;
+}
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+// ---------- write ----------
+mkdirSync(OUT_DIR, { recursive: true });
+const jsPath = join(OUT_DIR, "onboarding-tour.js");
+const htmlPath = join(OUT_DIR, "onboarding-preview.html");
+writeFileSync(jsPath, COMPONENT, "utf8");
+writeFileSync(htmlPath, previewHtml(), "utf8");
+
+console.log(`render-tour: wrote ${jsPath} and ${htmlPath}  (${spec.steps.length} steps${brand ? ", themed from " + BRAND : ", default theme"})`);

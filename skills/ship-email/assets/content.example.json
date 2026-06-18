@@ -1,0 +1,37 @@
+{
+  "$comment": "Filled by the ship-email skill from docs/SHIPPING-LOG.md + docs/brand.json, then re-themed for ONE audience. Copy to docs/announcements/<version>/content.json, edit, then run render-email.mjs. Strings are escaped at render time — write plain text, not HTML.",
+  "product": "MyFieldTime",
+  "tagline": "Run your jobs. Not your inbox.",
+  "version": "v0.8.0",
+  "audience": "homeowner",
+  "subject": "See exactly where your project's money is going",
+  "preheader": "Your new Money & Progress page, change-order sign-off, and more.",
+  "headline": "Your project, finally clear at a glance",
+  "greeting": "Hi Sarah,",
+  "intro": "We just shipped a few things that make it easier to see where your remodel stands — no spreadsheet, no phone tag.",
+  "items": [
+    {
+      "title": "See where the money's going",
+      "body": "Open one page to see how much of your budget is spent, what's left, and how far along the job is."
+    },
+    {
+      "title": "Approve changes with a real signature",
+      "body": "When something changes, review it and sign right on the page. No printing, no email chase."
+    },
+    {
+      "title": "One shared punch list",
+      "body": "The final to-do items live in one place everyone can see — so nothing slips at the finish line."
+    }
+  ],
+  "cta": { "label": "Open your project", "url": "https://app.myfieldtime.com/project" },
+  "signoff": "— The MyFieldTime team",
+  "footer": "You're receiving this because you have an active project on MyFieldTime.",
+  "unsubscribeUrl": "https://app.myfieldtime.com/settings/notifications",
+  "modalTitle": "What's new for you",
+  "social": {
+    "network": "linkedin",
+    "post": "Homeowners shouldn't need a spreadsheet to know where their remodel stands. MyFieldTime v0.8 puts budget, progress, and change-order sign-off on one page — so the client sees the money clearly and approves changes with a signature, not an email thread.",
+    "hashtags": ["construction", "remodel", "contractortech"],
+    "url": "https://myfieldtime.com/whats-new"
+  }
+}

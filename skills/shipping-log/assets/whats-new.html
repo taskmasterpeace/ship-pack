@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<!--
+  What's New — standalone, premium, themeable shipping-log page.   Part of the `shipping-log` skill.
+
+  HOW TO USE (for the skill / author):
+  1. Copy this file to docs/whats-new.html in the target repo.
+  2. THEME IT: edit the :root tokens below to the project's real brand (colors + fonts).
+     A second example theme (MyFieldTime) is shown commented under :root — copy that pattern.
+     Never invent a palette; pull from the project's brand doc / Tailwind config / landing page.
+  3. FILL IT: replace {{PRODUCT}}, {{TAGLINE}}, the four momentum numbers, the chip counts,
+     and everything between <!-- RELEASES:START --> and <!-- RELEASES:END --> with real,
+     benefit-first entries (same content you wrote to docs/SHIPPING-LOG.md). Keep the markup shape.
+  4. Each <article class="release"> needs an ascending style="--i:N" (0,1,2…) for the load stagger.
+
+  Categories are: new · improved · fixed · security  (use the matching change--<cat> class + badge).
+  Filtering is pure CSS (:has() + radio inputs) — the page works fully with JavaScript disabled.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{PRODUCT}} — What's New</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  /* ============================ THEME TOKENS ============================ */
+  :root{
+    --bg:#0b0d10; --bg-2:#0e1116; --surface:#13171e; --surface-2:#171c24;
+    --border:#232a33; --border-soft:#1b212a;
+    --text:#e7edf3; --muted:#90a0b0; --heading:#f5f9fd;
+    --brand:#4cc2ff;            /* primary signal — links, spine, glow */
+    --accent:#ffc24b;           /* secondary — momentum numbers */
+    --new:#58a6ff; --improved:#e3b341; --fixed:#3fb950; --security:#56d4dd;
+    --grid:rgba(255,255,255,.025);   /* blueprint lines */
+    --font-display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+    --font-body:"Hanken Grotesk",ui-sans-serif,system-ui,sans-serif;
+    --font-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",monospace;
+    --radius:14px; --maxw:50rem;
+  }
+  /* Example brand override — set these on :root for a MyFieldTime render:
+     --bg:#0a0a0f; --bg-2:#0a0c14; --surface:#10131c; --surface-2:#141826;
+     --border:#1d2740; --brand:#0056D2; --accent:#FFDD00;
+     --grid:rgba(0,86,210,.06);                                        */
+
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; color:var(--text); background:var(--bg);
+    font-family:var(--font-body); font-size:16px; line-height:1.6;
+    -webkit-font-smoothing:antialiased; letter-spacing:-0.006em;
+    background-image:
+      radial-gradient(120% 70% at 50% -8%, color-mix(in oklab, var(--brand) 16%, transparent), transparent 62%),
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size:auto, 34px 34px, 34px 34px;
+    background-attachment:scroll;
+    min-height:100vh;
+  }
+
+  /* hidden filter state (drives CSS-only filtering) */
+  .filter-state{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+
+  .wrap{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:clamp(2.2rem,6vw,4.5rem) 1.35rem 4rem}
+
+  /* ============================ MASTHEAD ============================ */
+  .eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--font-mono);
+    font-size:.72rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--brand)}
+  .eyebrow::before{content:"";width:1.6rem;height:1px;background:var(--brand);opacity:.7}
+  .title{font-family:var(--font-display);font-weight:700;color:var(--heading);
+    font-size:clamp(2.1rem,6vw,3.4rem);line-height:1.02;letter-spacing:-0.03em;margin:.7rem 0 .5rem}
+  .title em{font-style:normal;color:var(--brand)}
+  .tagline{color:var(--muted);font-size:1.06rem;margin:0;max-width:34rem}
+
+  /* momentum band */
+  .momentum{display:flex;flex-wrap:wrap;gap:0;margin:2rem 0 .5rem;
+    border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);overflow:hidden}
+  .stat{flex:1 1 8rem;padding:1.05rem 1.25rem;border-right:1px solid var(--border-soft)}
+  .stat:last-child{border-right:0}
+  .stat .n{font-family:var(--font-mono);font-weight:600;font-size:1.5rem;color:var(--accent);line-height:1}
+  .stat .l{display:block;margin-top:.35rem;font-size:.74rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+
+  /* ============================ FILTER CHIPS ============================ */
+  .filters{display:flex;flex-wrap:wrap;gap:.5rem;margin:2.4rem 0 2rem;position:sticky;top:0;
+    padding:.85rem 0;z-index:5;background:linear-gradient(var(--bg) 72%,transparent)}
+  .chip{display:inline-flex;align-items:center;gap:.45rem;cursor:pointer;user-select:none;
+    font-size:.85rem;font-weight:600;color:var(--muted);padding:.4rem .8rem;border-radius:999px;
+    border:1px solid var(--border);background:var(--surface);transition:all .18s ease}
+  .chip:hover{color:var(--text);border-color:color-mix(in oklab,var(--brand) 40%,var(--border))}
+  .chip .ct{font-family:var(--font-mono);font-size:.72rem;color:var(--muted);
+    background:var(--bg-2);border-radius:999px;padding:.05rem .4rem;min-width:1.5rem;text-align:center}
+  .chip .dot{width:.5rem;height:.5rem;border-radius:50%}
+  .dot.new{background:var(--new)} .dot.improved{background:var(--improved)}
+  .dot.fixed{background:var(--fixed)} .dot.security{background:var(--security)}
+  /* active chip — driven by which radio is checked */
+  #cat-all:checked      ~ .wrap .chip[for=cat-all],
+  #cat-new:checked      ~ .wrap .chip[for=cat-new],
+  #cat-improved:checked ~ .wrap .chip[for=cat-improved],
+  #cat-fixed:checked    ~ .wrap .chip[for=cat-fixed],
+  #cat-security:checked ~ .wrap .chip[for=cat-security]{
+    color:var(--heading);border-color:var(--brand);
+    background:color-mix(in oklab,var(--brand) 16%, var(--surface));box-shadow:0 0 0 1px color-mix(in oklab,var(--brand) 30%,transparent)}
+
+  /* ============================ TIMELINE ============================ */
+  .timeline{position:relative;padding-left:1.9rem}
+  .timeline::before{content:"";position:absolute;left:.42rem;top:.4rem;bottom:.4rem;width:2px;
+    background:linear-gradient(var(--brand),color-mix(in oklab,var(--brand) 8%,transparent))}
+  .release{position:relative;margin-bottom:2.6rem;animation:rise .6s cubic-bezier(.2,.7,.3,1) both;
+    animation-delay:calc(var(--i,0) * 80ms)}
+  .release::before{content:"";position:absolute;left:-1.66rem;top:.5rem;width:.85rem;height:.85rem;border-radius:50%;
+    background:var(--bg);border:2px solid var(--brand);box-shadow:0 0 0 4px color-mix(in oklab,var(--brand) 14%,transparent)}
+  .rel-head{display:flex;align-items:center;flex-wrap:wrap;gap:.6rem .75rem;margin-bottom:.2rem}
+  .vtag{font-family:var(--font-mono);font-weight:600;font-size:.86rem;color:var(--brand);
+    border:1px solid color-mix(in oklab,var(--brand) 45%,var(--border));border-radius:7px;padding:.12rem .5rem;
+    background:color-mix(in oklab,var(--brand) 10%,transparent)}
+  .rel-head time{font-family:var(--font-mono);font-size:.78rem;color:var(--muted)}
+  .rel-name{font-family:var(--font-display);font-weight:600;color:var(--heading);font-size:1.18rem;letter-spacing:-0.02em}
+  .rel-theme{color:var(--muted);font-style:italic;margin:.1rem 0 1rem;font-size:.96rem}
+
+  .changes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.6rem}
+  .change{display:grid;grid-template-columns:auto 1fr;gap:.85rem;align-items:start;
+    background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--c);border-radius:11px;
+    padding:.85rem 1rem;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+  .change:hover{transform:translateX(3px);background:var(--surface-2);
+    border-color:color-mix(in oklab,var(--c) 55%,var(--border))}
+  .change--new{--c:var(--new)} .change--improved{--c:var(--improved)}
+  .change--fixed{--c:var(--fixed)} .change--security{--c:var(--security)}
+  .badge{font-family:var(--font-mono);font-size:.64rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:var(--c);background:color-mix(in oklab,var(--c) 16%,transparent);
+    border:1px solid color-mix(in oklab,var(--c) 35%,transparent);border-radius:6px;padding:.2rem .42rem;margin-top:.12rem;white-space:nowrap}
+  .change h3{margin:0;font-size:.99rem;font-weight:700;color:var(--heading);letter-spacing:-0.01em}
+  .change p{margin:.2rem 0 0;font-size:.92rem;color:var(--muted)}
+
+  /* CSS-only filtering: hide non-matching changes + now-empty releases */
+  #cat-new:checked      ~ .wrap .change:not(.change--new),
+  #cat-improved:checked ~ .wrap .change:not(.change--improved),
+  #cat-fixed:checked    ~ .wrap .change:not(.change--fixed),
+  #cat-security:checked ~ .wrap .change:not(.change--security){display:none}
+  #cat-new:checked      ~ .wrap .release:not(:has(.change--new)),
+  #cat-improved:checked ~ .wrap .release:not(:has(.change--improved)),
+  #cat-fixed:checked    ~ .wrap .release:not(:has(.change--fixed)),
+  #cat-security:checked ~ .wrap .release:not(:has(.change--security)){display:none}
+
+  /* ============================ FOOTER ============================ */
+  .foot{margin-top:1rem;padding-top:1.6rem;border-top:1px solid var(--border-soft);
+    display:flex;flex-wrap:wrap;justify-content:space-between;gap:.5rem;color:var(--muted);font-size:.85rem}
+  .foot a{color:var(--brand);text-decoration:none}
+  .foot a:hover{text-decoration:underline}
+  .foot .mono{font-family:var(--font-mono)}
+
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.release{animation:none}*{scroll-behavior:auto}}
+  @media (max-width:480px){.stat{flex-basis:50%;border-bottom:1px solid var(--border-soft)}}
+</style>
+</head>
+<body>
+  <!-- CSS-only filter state. Keep these as the first children of <body>. -->
+  <input class="filter-state" type="radio" name="cat" id="cat-all" checked>
+  <input class="filter-state" type="radio" name="cat" id="cat-new">
+  <input class="filter-state" type="radio" name="cat" id="cat-improved">
+  <input class="filter-state" type="radio" name="cat" id="cat-fixed">
+  <input class="filter-state" type="radio" name="cat" id="cat-security">
+
+  <main class="wrap">
+    <header class="masthead">
+      <span class="eyebrow">Shipping Log</span>
+      <h1 class="title">What's new in <em>{{PRODUCT}}</em></h1>
+      <p class="tagline">{{TAGLINE}}</p>
+
+      <!-- MOMENTUM: replace numbers with real, honest stats -->
+      <div class="momentum">
+        <div class="stat"><span class="n">3</span><span class="l">Releases</span></div>
+        <div class="stat"><span class="n">22</span><span class="l">Updates shipped</span></div>
+        <div class="stat"><span class="n">7</span><span class="l">Days of shipping</span></div>
+        <div class="stat"><span class="n">Today</span><span class="l">Last shipped</span></div>
+      </div>
+    </header>
+
+    <!-- FILTER CHIPS: update the .ct counts to match real totals -->
+    <nav class="filters" aria-label="Filter by category">
+      <label class="chip" for="cat-all">All <span class="ct">22</span></label>
+      <label class="chip" for="cat-new"><span class="dot new"></span>New <span class="ct">9</span></label>
+      <label class="chip" for="cat-improved"><span class="dot improved"></span>Improved <span class="ct">7</span></label>
+      <label class="chip" for="cat-fixed"><span class="dot fixed"></span>Fixed <span class="ct">4</span></label>
+      <label class="chip" for="cat-security"><span class="dot security"></span>Security <span class="ct">2</span></label>
+    </nav>
+
+    <section class="timeline">
+      <!-- RELEASES:START — newest first. Each <article> gets an ascending --i. -->
+      <article class="release" style="--i:0">
+        <div class="rel-head">
+          <span class="vtag">v0.0.0</span>
+          <time datetime="2026-01-01">2026-01-01</time>
+          <span class="rel-name">Release name</span>
+        </div>
+        <p class="rel-theme">One italic line that frames why this release matters.</p>
+        <ul class="changes">
+          <li class="change change--new"><span class="badge">New</span>
+            <div><h3>Benefit-first headline of a brand-new capability.</h3>
+            <p>One plain sentence on what the user can now do, and where.</p></div></li>
+          <li class="change change--improved"><span class="badge">Improved</span>
+            <div><h3>The thing that got faster or clearer.</h3>
+            <p>What's better now, in the user's words.</p></div></li>
+          <li class="change change--security"><span class="badge">Security</span>
+            <div><h3>The protection that's now in place.</h3>
+            <p>State the safeguard calmly — never imply there was a breach.</p></div></li>
+        </ul>
+      </article>
+
+      <article class="release" style="--i:1">
+        <div class="rel-head">
+          <span class="vtag">v0.0.0</span>
+          <time datetime="2026-01-01">2026-01-01</time>
+          <span class="rel-name">Earlier release</span>
+        </div>
+        <ul class="changes">
+          <li class="change change--fixed"><span class="badge">Fixed</span>
+            <div><h3>The annoyance that's now gone.</h3>
+            <p>Describe the fix as relief, not as a bug report.</p></div></li>
+        </ul>
+      </article>
+      <!-- RELEASES:END -->
+    </section>
+
+    <footer class="foot">
+      <span>Built in public · <span class="mono">v{{VERSION}}</span> · updated {{UPDATED}}</span>
+      <a href="#">View the full log →</a>
+    </footer>
+  </main>
+</body>
+</html>
