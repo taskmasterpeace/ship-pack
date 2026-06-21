@@ -1,6 +1,12 @@
+<p align="center"><img src="assets/ship-pack-hero.svg" alt="ship-pack — turn what you ship into the docs, changelog, and launch kit around it" width="100%"></p>
+
 # ship-pack
 
 Docs + release toolkit: versioned user guides, benefit-first changelogs, screenshots, logos, a brand kit, an embeddable help bot, demo/onboarding/pitch/press kits — all driven by one docs/brand.json + docs/VERSION.
+
+## What it does
+
+<img src="assets/ship-pack-flow.svg" alt="One brand.json + one version drives a user guide, changelog, screenshots, logos, brand kit, help bot, and more" width="100%">
 
 ## Install as a Claude Code plugin
 

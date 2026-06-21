@@ -94,7 +94,10 @@ writeFileSync(join(OUT, ".claude-plugin", "marketplace.json"),
   }, null, 2) + "\n");
 
 writeFileSync(join(OUT, "README.md"),
+  `<p align="center"><img src="assets/ship-pack-hero.svg" alt="ship-pack — turn what you ship into the docs, changelog, and launch kit around it" width="100%"></p>\n\n` +
   `# ship-pack\n\n${DESC}\n\n` +
+  `## What it does\n\n` +
+  `<img src="assets/ship-pack-flow.svg" alt="One brand.json + one version drives a user guide, changelog, screenshots, logos, brand kit, help bot, and more" width="100%">\n\n` +
   `## Install as a Claude Code plugin\n\n` +
   "```\n/plugin marketplace add " + REPO + "\n/plugin install ship-pack@ship-pack-marketplace\n```\n\n" +
   `## Or drop-in (no marketplace)\n\n` +

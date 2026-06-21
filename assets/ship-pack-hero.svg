@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" role="img" aria-label="ship-pack — a Claude Code plugin that turns what you ship into the docs, changelog, and launch kit around it">
+  <defs>
+    <radialGradient id="glow" cx="42%" cy="0%" r="75%">
+      <stop offset="0%" stop-color="#48b6ff" stop-opacity="0.22"/>
+      <stop offset="55%" stop-color="#48b6ff" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" fill="none" stroke="#ffffff" stroke-opacity="0.035" stroke-width="1"/>
+    </pattern>
+    <linearGradient id="cardbg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#171c26"/>
+      <stop offset="100%" stop-color="#11151c"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1280" height="640" fill="#0c0e13"/>
+  <rect width="1280" height="640" fill="url(#grid)"/>
+  <rect width="1280" height="640" fill="url(#glow)"/>
+
+  <!-- left: identity -->
+  <text x="84" y="172" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" letter-spacing="5" fill="#48b6ff" font-weight="600">CLAUDE CODE PLUGIN</text>
+
+  <text x="80" y="292" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="106" font-weight="800" letter-spacing="-3" fill="#f4f8fd">ship<tspan fill="#48b6ff">-pack</tspan></text>
+
+  <text x="84" y="348" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="28" fill="#aab6c6">Turn what you ship into the docs,</text>
+  <text x="84" y="387" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="28" fill="#aab6c6">changelog, and launch kit around it.</text>
+
+  <!-- install pill -->
+  <rect x="82" y="432" width="560" height="50" rx="11" fill="#14181f" stroke="#2a3342"/>
+  <text x="104" y="464" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="18" fill="#9fd0ff"><tspan fill="#5f6b7c">/plugin marketplace add </tspan>taskmasterpeace/ship-pack</text>
+
+  <text x="84" y="532" font-family="system-ui, -apple-system, Segoe UI, Roboto, sans-serif" font-size="18" fill="#6b7686">15 slash commands · 14 skills · one brand.json · works in any repo</text>
+
+  <!-- right: a /ship-release terminal -->
+  <rect x="724" y="150" width="476" height="340" rx="16" fill="url(#cardbg)" stroke="#2a3342"/>
+  <circle cx="752" cy="182" r="6" fill="#ff5f57"/>
+  <circle cx="772" cy="182" r="6" fill="#febc2e"/>
+  <circle cx="792" cy="182" r="6" fill="#28c840"/>
+  <text x="1176" y="187" text-anchor="end" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" fill="#5f6b7c">ship · release</text>
+  <line x1="724" y1="206" x2="1200" y2="206" stroke="#2a3342"/>
+
+  <text x="748" y="250" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="20"><tspan fill="#5f6b7c">$ </tspan><tspan fill="#48b6ff" font-weight="600">/ship-release</tspan></text>
+
+  <text x="748" y="296" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17"><tspan fill="#46d39a">&#10003; </tspan><tspan fill="#c7d2de">version  </tspan><tspan fill="#ffc24b">0.8.0 &#8594; 0.9.0</tspan></text>
+  <text x="748" y="332" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17"><tspan fill="#46d39a">&#10003; </tspan><tspan fill="#c7d2de">changelog + What&#8217;s New page</tspan></text>
+  <text x="748" y="368" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17"><tspan fill="#46d39a">&#10003; </tspan><tspan fill="#c7d2de">user guide (navigable HTML)</tspan></text>
+  <text x="748" y="404" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="17"><tspan fill="#46d39a">&#10003; </tspan><tspan fill="#c7d2de">screenshots refreshed</tspan></text>
+
+  <line x1="748" y1="428" x2="1176" y2="428" stroke="#243040" stroke-dasharray="3 4"/>
+  <text x="748" y="462" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" fill="#48b6ff">&#8594; docs · changelog · shots, all in sync</text>
+</svg>
