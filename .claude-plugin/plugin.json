@@ -1,7 +1,7 @@
 {
   "name": "ship-pack",
-  "version": "1.0.0",
-  "description": "Docs + release toolkit: versioned user guides, benefit-first changelogs, screenshots, logos, a brand kit, an embeddable help bot, demo/onboarding/pitch/press kits — all driven by one docs/brand.json + docs/VERSION.",
+  "version": "1.1.0",
+  "description": "Docs + release toolkit for Claude Code: versioned user guides, benefit-first changelogs, screenshots, logos, a brand kit, an embeddable help bot, demo/onboarding/pitch/press kits — all driven by one docs/brand.json + docs/VERSION.",
   "author": {
     "name": "Machine King Labs"
   },

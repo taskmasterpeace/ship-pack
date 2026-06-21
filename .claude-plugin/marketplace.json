@@ -7,7 +7,7 @@
     {
       "name": "ship-pack",
       "source": "./",
-      "description": "Docs + release toolkit: versioned user guides, benefit-first changelogs, screenshots, logos, a brand kit, an embeddable help bot, demo/onboarding/pitch/press kits — all driven by one docs/brand.json + docs/VERSION."
+      "description": "Docs + release toolkit for Claude Code: versioned user guides, benefit-first changelogs, screenshots, logos, a brand kit, an embeddable help bot, demo/onboarding/pitch/press kits — all driven by one docs/brand.json + docs/VERSION."
     }
   ]
 }
